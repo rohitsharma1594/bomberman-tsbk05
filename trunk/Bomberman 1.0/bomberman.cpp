@@ -5,8 +5,8 @@
 #include <stdlib.h>
 #include <iostream>
 #include "cube.h"
-#include "dummyunbreakableobject.h"
-#include "dummybreakableobject.h"
+#include "unbreakableobject.h"
+#include "breakableobject.h"
 #include "bombobject.h"
 #include "explosionobject.h"
 #include "mapsubset.h"
