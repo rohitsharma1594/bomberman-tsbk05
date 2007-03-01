@@ -5,7 +5,7 @@
 
 class UnbreakableObject : public Object {
 public:
-	UnbreakableObject(Model*); 
+	UnbreakableObject(Model*, GLfloat, GLfloat, GLfloat = 0, GLfloat = 0, GLfloat = 1); 
 };
 
 #endif

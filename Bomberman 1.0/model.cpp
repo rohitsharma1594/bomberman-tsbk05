@@ -2,12 +2,17 @@
 #include "freeglut.h"
 
 
-Model::Model() {
+Model::Model(GLfloat scale) : scale(scale) {
 	return;
 }
 
 
 void Model::draw() {
+	if (scale != 1) {
+		glPushMatrix();
+		glScalef(scale, scale, scale);
+	}
+
 	const static GLfloat cubeVertexes[][3] = {
 		{-0.5, 0.5, -0.5},
 		{0.5, 0.5, -0.5},
@@ -69,4 +74,8 @@ void Model::draw() {
 	glVertex3fv(cubeVertexes[7]);
 	glVertex3fv(cubeVertexes[5]);
 	glEnd();
+
+	if (scale != 1) {
+		glPopMatrix();
+	}
 }
