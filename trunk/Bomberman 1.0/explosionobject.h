@@ -5,7 +5,7 @@
 
 class ExplosionObject : public Object {
 public:
-	ExplosionObject(Model*); 
+	ExplosionObject(Model*, GLfloat, GLfloat, GLfloat = 0, GLfloat = 0, GLfloat = 1); 
 };
 
 #endif

@@ -5,10 +5,10 @@
 
 
 class Object {
-	GLfloat x, y, z, rotation;
+	GLfloat x, y, z, rotation, scale;
 	Model* model;
 public:
-	Object(Model*, GLfloat, GLfloat, GLfloat, GLfloat);
+	Object(Model*, GLfloat, GLfloat, GLfloat = 0, GLfloat = 0, GLfloat = 1);
 	~Object();
 	void draw();
 	void addRotation(GLfloat);

@@ -69,7 +69,9 @@ T MapSubset<T, width, height>::removeAt(int x, int y) {
 		}
 		begin++;
 	}
+
 	assert(false);
+	return NULL; // this should never happen, we should actually crash here, I think assert does this?
 }
 	
 

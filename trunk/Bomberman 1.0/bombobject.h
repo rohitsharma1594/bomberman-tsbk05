@@ -5,7 +5,7 @@
 
 class BombObject : public Object {
 public:
-	BombObject(Model*); 
+	BombObject(Model*, GLfloat, GLfloat, GLfloat = 0, GLfloat = 0, GLfloat = 1); 
 };
 
 #endif
