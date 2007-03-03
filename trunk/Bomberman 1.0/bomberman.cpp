@@ -256,6 +256,10 @@ int main(int argc, char *argv[]) {
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
 
+	glEnable(GL_TEXTURE_2D);
+
+	glEnable(GL_NORMALIZE);
+
 	reshape(size[0], size[1]);
 
 	loadLevel();
