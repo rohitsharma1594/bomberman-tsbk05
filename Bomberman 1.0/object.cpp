@@ -45,3 +45,4 @@ void Object::setLocation(GLfloat newX, GLfloat newZ, GLfloat newY) {
 	z = newX;
 	y = newY;
 }
+
