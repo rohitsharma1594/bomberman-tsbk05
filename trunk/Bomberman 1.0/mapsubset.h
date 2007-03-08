@@ -60,7 +60,7 @@ template<class T, int width, int height>
 T MapSubset<T, width, height>::removeAt(int x, int y) {
 	objectArray[x][y] = NULL;
 
-	std::vector<MapSubsetStruct<T>*>::iterator begin = objectVector.begin(), end = objectVector.end();
+	typename std::vector<MapSubsetStruct<T>*>::iterator begin = objectVector.begin(), end = objectVector.end();
 	while (begin != end) {
 		if ((*begin)->x == x && (*begin)->y == y) {
 			T temp = (*begin)->object;
@@ -89,7 +89,7 @@ std::vector<MapSubsetStruct<T>*>* const MapSubset<T, width, height>::getObjectVe
 
 template<class T, int width, int height>
 void MapSubset<T, width, height>::clear() {
-	std::vector<MapSubsetStruct<T>*>::iterator begin = objectVector.begin(), end = objectVector.end();
+	typename std::vector<MapSubsetStruct<T>*>::iterator begin = objectVector.begin(), end = objectVector.end();
 	while (begin != end) {
 		objectArray[(*begin)->x][(*begin)->y] = NULL;
 		begin++;
@@ -100,3 +100,4 @@ void MapSubset<T, width, height>::clear() {
 
 
 #endif
+
