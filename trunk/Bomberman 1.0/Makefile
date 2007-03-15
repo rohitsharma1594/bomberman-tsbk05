@@ -5,11 +5,11 @@ CC = gcc
 LD = gcc
 
 # Compiler flags go here.
-CFLAGS = -I/usr/include/GL -I/usr/include/SDL
+CFLAGS = -g -I/usr/include/GL -I/usr/include/SDL
 
 # Linker flags go here. Currently there aren't any, but if we'll switch to
 # code optimization, we might add "-s" here to strip debug info and symbols.
-LDFLAGS = -I/usr/include/GL -lglut `sdl-config --libs --cflags`
+LDFLAGS = -g -I/usr/include/GL -lglut `sdl-config --libs --cflags`
 
 # Erase files.
 RM = /bin/rm -f
@@ -27,7 +27,7 @@ _OBJS = $(SOURCES:.cpp=.o)
 OBJS = $(patsubst %,$(ODIR)/%,$(_OBJS))
 
 # Program executable file name.
-PROG = bomberman
+PROG = Bomberman
 
 # Top-level rule, to compile everything.
 all: $(PROG)
