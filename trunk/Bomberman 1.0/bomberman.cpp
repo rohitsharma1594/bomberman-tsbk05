@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <iostream>
 #include <assert.h>
-#include "cube.h"
 #include "unbreakableobject.h"
 #include "breakableobject.h"
 #include "bombobject.h"
@@ -13,7 +12,8 @@
 #include "mapsubset.h"
 #include "playerobject.h"
 #include "maputilities.h"
-
+#include "cube2.h"
+#include "modelloader.h"
 
 
 using namespace std;
@@ -25,13 +25,13 @@ const int size[2] =
     };
 const GLfloat playerSpeed = 3;  // The speed of our player in blocks/second
 
-Model* unbreakableModel = new Model();
-Model* breakableModel = new Model(0.9);
-Model* playerModel = new Model(0.5);
+// Model* unbreakableModel = new ModelLoader("bart.3DS");
+// Model* breakableModel = new Cube2();
+// Model* playerModel = new Cube2();
 bool keyboard[400]; // The SDL_-keywords are defined all the way up to 322'ish, this works for now
 
-int levelWidth = 10;
-int levelHeight = 10;
+int levelWidth = 1;
+int levelHeight = 1;
 
 MapSubset<UnbreakableObject*>* unbreakableWalls;
 MapSubset<BreakableObject*>* breakableWalls;
@@ -120,14 +120,14 @@ void loadLevel()
     */
 
 		// Load unbreakable objects i.e walls
-		assert(MapUtilities<UnbreakableObject>::readMap("maze.data", unbreakableWalls, unbreakableModel, '#'));
+		assert(MapUtilities<UnbreakableObject>::readMap("maze.data", unbreakableWalls, new Cube2(), '#'));
 		
     // Place a player!
     if (player1 != NULL)
     {
         delete player1;
     }
-    player1 = new PlayerObject(playerModel, 1, 1, 0, 45, 1);
+    player1 = new PlayerObject(new ModelLoader("lolly.3DS"), 1, 1, 0, 0, 0.0001);
 }
 
 

@@ -49,7 +49,7 @@ void MapUtilities<T>::getMapSize(string filename, int& rows, int& cols)
             getline(is, line);
             rows++;
 
-            if(line.length()!=cols)
+            if(line.length()!=(uint)cols)
             {
                 cout<<"Row length does not match default."<<endl;
                 cout<<"Plz check "<<filename<<", row "<<rows<<endl;
@@ -121,7 +121,7 @@ int MapUtilities<T>::getMapSizeCols(string filename)
     cout<<"Read maze size."<<endl;
     cout<<"Max columns = "<<cols<<endl;
 
-    return 10;
+    return cols;
 
 }
 
@@ -174,7 +174,7 @@ int MapUtilities<T>::getMapSizeRows(string filename)
     cout<<"Read maze size."<<endl;
     cout<<"Max rows = "<<rows<<endl;
 
-    return 10;
+    return rows;
 
 }
 
@@ -201,7 +201,7 @@ int MapUtilities<T>::readMap(string filename,
         {
             getline(is, line);
 
-            for(int i=0;i<line.length();i++)
+            for( int i=0;(uint)i<line.length();i++)
             {
                 cout<<line.at(i);
                 if(line.at(i)==blockChar)
