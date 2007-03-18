@@ -10,18 +10,14 @@ Object::Object(Model* model, GLfloat x, GLfloat z, GLfloat y, GLfloat rotation, 
 Object::~Object() {
 }
 
-
 void Object::draw() {
 	glPushMatrix();
 	glTranslatef(x, y, z);
 	glScalef(scale, scale, scale);
 	glRotatef(rotation, 0, 1, 0);
-
 	model->draw();
-
 	glPopMatrix();
 }
-
 
 void Object::addRotation(GLfloat newRotation) {
 	rotation += newRotation;
