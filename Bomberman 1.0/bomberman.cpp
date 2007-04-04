@@ -120,14 +120,15 @@ void loadLevel()
     */
 
 		// Load unbreakable objects i.e walls
-		assert(MapUtilities<UnbreakableObject>::readMap("maze.data", unbreakableWalls, new Cube2(), '#'));
+		assert(MapUtilities<UnbreakableObject>::readMap("maze.data", unbreakableWalls, new ModelLoader("cube_frame_subsurf_2.3ds"),0.5, '#'));
 		
     // Place a player!
     if (player1 != NULL)
     {
         delete player1;
     }
-    player1 = new PlayerObject(new ModelLoader("lolly.3DS"), 1, 1, 0, 0, 0.0001);
+    player1 = new PlayerObject(new ModelLoader("lolly.3DS"), 1, 1, 0, 180.0, 0.01);
+		player1->addConstantRotation( 10,10,10);
 }
 
 
