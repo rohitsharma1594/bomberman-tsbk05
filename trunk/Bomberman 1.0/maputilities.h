@@ -1,12 +1,12 @@
+#ifndef MAPUTIL_H
+#define MAPUTIL_H
 
 #include <fstream>
 #include <string>
 #include "mapsubset.h"
 #include "model.h"
 #include <iostream>
-
-#ifndef MAPUTIL_H
-#define MAPUTIL_H
+#include <freeglut.h>
 
 using namespace std;
 
@@ -17,7 +17,7 @@ public:
     static void getMapSize(string, int&, int&);
     static int getMapSizeCols(string);
     static int getMapSizeRows(string);
-    static int readMap(string, MapSubset<T*>*, Model*, char);
+    static int readMap(string, MapSubset<T*>*, Model*, GLfloat, char);
 };
 
 /**
@@ -180,13 +180,15 @@ int MapUtilities<T>::getMapSizeRows(string filename)
 
 /**
 	Reads the map and inserts new elements of the class T 
-	where position match the blockChar, into the subset. 
+	where position match the blockChar, into the subset.
+	Also the class needs to be a object sublclass.
 **/
 template<class T>
 int MapUtilities<T>::readMap(string filename,
                              MapSubset<T*>* subset,
                              Model* model,
-                             char blockChar)
+														 GLfloat modelScale, 
+														 char blockChar)
 {
     string line;
     ifstream is;
@@ -206,7 +208,7 @@ int MapUtilities<T>::readMap(string filename,
                 cout<<line.at(i);
                 if(line.at(i)==blockChar)
                 { //Add object
-                    subset->insertAt(new T(model, i, cnt_rows), i, cnt_rows);
+									subset->insertAt(new T(model, i, cnt_rows, 0, 0, modelScale), i, cnt_rows);
                 }
             }
             cout<<" - Blocks("<<line.length()<<")"<<endl;

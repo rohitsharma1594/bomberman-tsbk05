@@ -6,12 +6,16 @@
 
 class Object {
 	GLfloat x, y, z, rotation, scale;
+	GLfloat crx, cry, crz;
+	GLfloat crxInc, cryInc, crzInc;
+
 	Model* model;
 public:
 	Object(Model*, GLfloat, GLfloat, GLfloat = 0, GLfloat = 0, GLfloat = 1);
 	~Object();
 	void draw();
 	void addRotation(GLfloat);
+	void addConstantRotation(GLfloat, GLfloat, GLfloat);
 	void addLocation(GLfloat, GLfloat, GLfloat);
 	void addLocationX(GLfloat newX) { x += newX; };
 	void addLocationY(GLfloat newY) { y += newY; };
