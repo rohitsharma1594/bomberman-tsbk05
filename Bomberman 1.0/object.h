@@ -5,32 +5,52 @@
 
 
 class Object {
-	GLfloat x, y, z, rotation, scale;
-	GLfloat crx, cry, crz;
-	GLfloat crxInc, cryInc, crzInc;
+    GLfloat x, y, z, rotation, scale;
+    GLfloat crx, cry, crz;
+    GLfloat crxInc, cryInc, crzInc;
 
-	Model* model;
+    Model* model;
 public:
-	Object(Model*, GLfloat, GLfloat, GLfloat = 0, GLfloat = 0, GLfloat = 1);
-	~Object();
-	void draw();
-	void addRotation(GLfloat);
-	void addConstantRotation(GLfloat, GLfloat, GLfloat);
-	void addLocation(GLfloat, GLfloat, GLfloat);
-	void addLocationX(GLfloat newX) { x += newX; };
-	void addLocationY(GLfloat newY) { y += newY; };
-	void addLocationZ(GLfloat newZ) { z += newZ; };
-	void setRotation(GLfloat);
-	void setLocation(GLfloat, GLfloat, GLfloat);
-	void setLocationX(GLfloat newX) { x = newX; };
-	void setLocationY(GLfloat newY) { y = newY; };
-	void setLocationZ(GLfloat newZ) { z = newZ; };
+    Object(Model*, GLfloat, GLfloat, GLfloat = 0, GLfloat = 0, GLfloat = 1);
+    ~Object();
+    void draw();
+    void addRotation(GLfloat);
+    void addConstantRotation(GLfloat, GLfloat, GLfloat);
+    void addLocation(GLfloat, GLfloat, GLfloat);
+    void addLocationX(GLfloat newX) {
+        x += newX;
+    };
+    void addLocationY(GLfloat newY) {
+        y += newY;
+    };
+    void addLocationZ(GLfloat newZ) {
+        z += newZ;
+    };
+    void setRotation(GLfloat);
+    void setLocation(GLfloat, GLfloat, GLfloat);
+    void setLocationX(GLfloat newX) {
+        x = newX;
+    };
+    void setLocationY(GLfloat newY) {
+        y = newY;
+    };
+    void setLocationZ(GLfloat newZ) {
+        z = newZ;
+    };
 
 
-	GLfloat getLocationX() { return x; };
-	GLfloat getLocationY() { return y; };
-	GLfloat getLocationZ() { return z; };
-	GLfloat getRotation() { return rotation; };
+    GLfloat getLocationX() {
+        return x;
+    };
+    GLfloat getLocationY() {
+        return y;
+    };
+    GLfloat getLocationZ() {
+        return z;
+    };
+    GLfloat getRotation() {
+        return rotation;
+    };
 };
 
 #endif

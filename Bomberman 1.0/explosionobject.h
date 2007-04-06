@@ -4,8 +4,10 @@
 #define EXPLOSIONOBJECT_H
 
 class ExplosionObject : public Object {
+    float endTime;
 public:
-	ExplosionObject(Model*, GLfloat, GLfloat, GLfloat = 0, GLfloat = 0, GLfloat = 1); 
+    ExplosionObject(float, Model*, GLfloat, GLfloat, GLfloat = 0, GLfloat = 0, GLfloat = 1);
+    bool isFaded(float currentTime);
 };
 
 #endif

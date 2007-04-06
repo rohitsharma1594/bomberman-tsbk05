@@ -5,7 +5,7 @@
 
 class BreakableObject : public Object {
 public:
-	BreakableObject(Model*, GLfloat, GLfloat, GLfloat = 0, GLfloat = 0, GLfloat = 1); 
+    BreakableObject(Model*, GLfloat, GLfloat, GLfloat = 0, GLfloat = 0, GLfloat = 1);
 };
 
 #endif

@@ -7,8 +7,8 @@
 class Cube2 : public Model {
 
 public:
-	Cube2();
-	void draw();
+    Cube2();
+    void draw();
 };
 
 #endif
