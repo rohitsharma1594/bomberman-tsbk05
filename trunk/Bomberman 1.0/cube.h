@@ -6,10 +6,10 @@
 
 class DumbObject {
 public:
-	Object object;
-	DumbObject(Model*, GLfloat, GLfloat, GLfloat, GLfloat);
+    Object object;
+    DumbObject(Model*, GLfloat, GLfloat, GLfloat, GLfloat);
 
-	void draw();
+    void draw();
 };
 
 

@@ -7,8 +7,8 @@
 class Model {
 
 public:
-	virtual void draw(){};
-	virtual ~Model(){};
+    virtual void draw() {};
+    virtual ~Model() {};
 };
 
 #endif

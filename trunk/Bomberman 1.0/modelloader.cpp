@@ -13,21 +13,21 @@
 */
 
 ModelLoader::ModelLoader(const char* filename):Model() {
-	
-		Lib3dsFile *file=lib3ds_file_load(filename);
+
+    Lib3dsFile *file=lib3ds_file_load(filename);
     if (!file) {
         printf("ModelLoader :: Failed to load file %s", filename);
         exit(1);
     }
-		
-		listId = glGenLists(1);
-		if(listId == 0){
-			  printf("ModelLoader :: Could not generate display list id.\n");
+
+    listId = glGenLists(1);
+    if (listId == 0) {
+        printf("ModelLoader :: Could not generate display list id.\n");
         exit(1);
-		}
+    }
 
     glNewList(listId, GL_COMPILE);
-		// insert any OpenGL commands of your own.
+    // insert any OpenGL commands of your own.
 
     glBegin(GL_TRIANGLES);
     for (Lib3dsMesh *mesh = file->meshes; mesh; mesh = mesh->next)  {    // draw ALL meshes of ALL objects
@@ -40,7 +40,9 @@ ModelLoader::ModelLoader(const char* filename):Model() {
             }
 
             if (mat) {
-                static GLfloat a[4]={0.0f, 0.0f, 0.0f, 1.0f};
+                static GLfloat a[4]= {
+                                         0.0f, 0.0f, 0.0f, 1.0f
+                                     };
                 float s;
                 glMaterialfv(GL_FRONT, GL_AMBIENT, a);
                 glMaterialfv(GL_FRONT, GL_DIFFUSE, mat->diffuse);
@@ -69,10 +71,10 @@ ModelLoader::ModelLoader(const char* filename):Model() {
     glEndList();    // end display list
     lib3ds_file_free(file);
 
-
+    printf("Done loading model!\n");
 }
 
 void ModelLoader::draw() {
-	glCallList(listId);
+    glCallList(listId);
 }
 
