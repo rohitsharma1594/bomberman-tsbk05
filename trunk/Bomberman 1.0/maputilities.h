@@ -7,23 +7,31 @@
 #include "model.h"
 #include <iostream>
 #include <freeglut.h>
+#include "breakableobject.h"
+#include "unbreakableobject.h"
 
 using namespace std;
 
-template<class T>
+
 class MapUtilities {
 public:
     static void getMapSize(string, int&, int&);
     static int getMapSizeCols(string);
     static int getMapSizeRows(string);
-    static int readMap(string, MapSubset<T*>*, Model*, GLfloat, char);
+	static int MapUtilities::readMap(string filename,
+                             MapSubset<UnbreakableObject*>* walls,
+                             MapSubset<BreakableObject*>* destructibles,
+                             Model* modelWall,
+                             Model* modelDestructible,
+                             GLfloat modelScale,
+                             char blockChar,
+                             char destructibleBlockChar);
 };
 
 /**
 	Reads the file and set the map size.
 **/
-template<class T>
-void MapUtilities<T>::getMapSize(string filename, int& rows, int& cols) {
+void MapUtilities::getMapSize(string filename, int& rows, int& cols) {
 
     string line;
     ifstream is;
@@ -68,8 +76,7 @@ void MapUtilities<T>::getMapSize(string filename, int& rows, int& cols) {
 /**
 	Returns the nr of columns the map has.
 **/
-template<class T>
-int MapUtilities<T>::getMapSizeCols(string filename) {
+int MapUtilities::getMapSizeCols(string filename) {
 
     string line;
     ifstream is;
@@ -115,8 +122,7 @@ int MapUtilities<T>::getMapSizeCols(string filename) {
 /**
 	Returns the nr of rows the map has.
 **/
-template<class T>
-int MapUtilities<T>::getMapSizeRows(string filename) {
+int MapUtilities::getMapSizeRows(string filename) {
 
     string line;
     ifstream is;
@@ -164,12 +170,14 @@ int MapUtilities<T>::getMapSizeRows(string filename) {
 	where position match the blockChar, into the subset.
 	Also the class needs to be a object sublclass.
 **/
-template<class T>
-int MapUtilities<T>::readMap(string filename,
-                             MapSubset<T*>* subset,
-                             Model* model,
+int MapUtilities::readMap(string filename,
+                             MapSubset<UnbreakableObject*>* walls,
+                             MapSubset<BreakableObject*>* destructibles,
+                             Model* modelWall,
+                             Model* modelDestructible,
                              GLfloat modelScale,
-                             char blockChar) {
+                             char blockChar,
+                             char destructableBlockChar) {
     string line;
     ifstream is;
     is.open(filename.data());
@@ -184,8 +192,10 @@ int MapUtilities<T>::readMap(string filename,
             for ( int i=0; (unsigned int)i<line.length(); i++) {
                 cout<<line.at(i);
                 if (line.at(i)==blockChar) { //Add object
-                    subset->insertAt(new T(model, i, cnt_rows, 0, 0, modelScale), i, cnt_rows);
-                }
+                    walls->insertAt(new UnbreakableObject(modelWall, i, cnt_rows, 0, 0, modelScale), i, cnt_rows);
+				} else if (line.at(i)==destructableBlockChar) {
+                    destructibles->insertAt(new BreakableObject(modelDestructible, i, cnt_rows, 0, 0, modelScale), i, cnt_rows);
+				}
             }
             cout<<" - Blocks("<<line.length()<<")"<<endl;
             cnt_rows++;
