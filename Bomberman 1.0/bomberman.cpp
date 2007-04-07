@@ -1,4 +1,5 @@
 #include <SDL.h>
+#include <SDL_mixer.h>
 #include <freeglut.h>
 #include <math.h>
 #include <time.h>
@@ -14,6 +15,7 @@
 #include "maputilities.h"
 #include "cube2.h"
 #include "modelloader.h"
+#include <map>
 //#include <cmath>
 
 
@@ -36,6 +38,7 @@ int levelHeight = 1;
 
 MapSubset<UnbreakableObject*>* unbreakableWalls;
 MapSubset<BreakableObject*>* breakableWalls;
+map<BreakableObject*, BreakableObject*>* brokenWalls;
 MapSubset<BombObject*>* bombs;
 MapSubset<ExplosionObject*>* explosions;
 MapSubset<bool>* spawns;
@@ -44,7 +47,17 @@ PlayerObject* player2;
 Model* bombModel = NULL;
 Model* explosionModel = NULL;
 static const int BOMBRADIUS = 3;
-static const int EXPLOSIONLIFETIME = 2;
+static const int EXPLOSIONLIFETIME = 1;
+static const int WINDELAY = 3;
+float victoryTimer = 0;
+
+Mix_Chunk *explosionSound1;
+Mix_Chunk *explosionSound2;
+Mix_Chunk *dieSound1;
+Mix_Chunk *dieSound2;
+Mix_Chunk *victorySound1;
+Mix_Chunk *victorySound2;
+
 
 
 int round(float x) {
@@ -123,7 +136,7 @@ void loadLevel() {
     }
 
     // Load unbreakable objects i.e walls
-    assert(MapUtilities<UnbreakableObject>::readMap("maze.data", unbreakableWalls, new ModelLoader("cube_frame_subsurf_2.3ds"),0.5, '#'));
+    assert(MapUtilities::readMap("maze.data", unbreakableWalls, breakableWalls, new ModelLoader("cube_frame_subsurf_2.3ds"), new ModelLoader("cube_frame_subsurf_2.3ds"),0.5, '#', '%'));
 
     // Place a player!
     if (player1 != NULL) {
@@ -307,14 +320,14 @@ bool died(PlayerObject *player) {
 }
 
 
-void explosionAt(int x, int z, float endTime);
+void explosionAt(int x, int z, float endTime, Mix_Chunk *explosionSound);
 
 
-bool tryPlaceExplosion(int x, int z, float endTime) {
+bool tryPlaceExplosion(int x, int z, float endTime, Mix_Chunk *explosionSound) {
     if (isValidPosition(x, z)) {
         if (isBombAt(x, z)) {
             bombs->removeAt(x, z);
-            explosionAt(x, z, endTime);
+            explosionAt(x, z, endTime, explosionSound);
         } else if (isExplosionAt(x, z)) {
             //if (explosions->getObjectAt(x, z)->getExplosionRadius() < spreadCount) {
             explosions->removeAt(x, z);
@@ -331,24 +344,85 @@ bool tryPlaceExplosion(int x, int z, float endTime) {
 }
 
 
-void explosionAt(int x, int z, float endTime) {
-    tryPlaceExplosion(x, z, endTime);
-    if (tryPlaceExplosion(x, z-1, endTime))
-        if (tryPlaceExplosion(x, z-2, endTime))
-            tryPlaceExplosion(x, z-3, endTime);
-    if (tryPlaceExplosion(x, z+1, endTime))
-        if (tryPlaceExplosion(x, z+2, endTime))
-            tryPlaceExplosion(x, z+3, endTime);
-    if (tryPlaceExplosion(x-1, z, endTime))
-        if (tryPlaceExplosion(x-2, z, endTime))
-            tryPlaceExplosion(x-3, z, endTime);
-    if (tryPlaceExplosion(x+1, z, endTime))
-        if (tryPlaceExplosion(x+2, z, endTime))
-            tryPlaceExplosion(x+3, z, endTime);
+void explosionAt(int x, int z, float endTime, Mix_Chunk *explosionSound) {
+	Mix_PlayChannel(-1, explosionSound, 0);
+	tryPlaceExplosion(x, z, endTime, explosionSound);
+
+	if (tryPlaceExplosion(x, z-1, endTime, explosionSound)) {
+		if (tryPlaceExplosion(x, z-2, endTime, explosionSound)) {
+			if (!tryPlaceExplosion(x, z-3, endTime, explosionSound)) {
+				if (breakableWalls->isObjectAt(x, z-3)) {
+					brokenWalls->insert(pair<BreakableObject*, BreakableObject*>(breakableWalls->getObjectAt(x, z-3), breakableWalls->getObjectAt(x, z-3)));
+				}
+			}
+		} else {
+			if (breakableWalls->isObjectAt(x, z-2)) {
+				brokenWalls->insert(pair<BreakableObject*, BreakableObject*>(breakableWalls->getObjectAt(x, z-2), breakableWalls->getObjectAt(x, z-2)));
+			}
+		}
+	} else {
+		if (breakableWalls->isObjectAt(x, z-1)) {
+			brokenWalls->insert(pair<BreakableObject*, BreakableObject*>(breakableWalls->getObjectAt(x, z-1), breakableWalls->getObjectAt(x, z-1)));
+		}
+	}
+
+	if (tryPlaceExplosion(x, z+1, endTime, explosionSound)) {
+		if (tryPlaceExplosion(x, z+2, endTime, explosionSound)) {
+			if (!tryPlaceExplosion(x, z+3, endTime, explosionSound)) {
+				if (breakableWalls->isObjectAt(x, z+3)) {
+					brokenWalls->insert(pair<BreakableObject*, BreakableObject*>(breakableWalls->getObjectAt(x, z+3), breakableWalls->getObjectAt(x, z+3)));
+				}
+			}
+		} else {
+			if (breakableWalls->isObjectAt(x, z+2)) {
+				brokenWalls->insert(pair<BreakableObject*, BreakableObject*>(breakableWalls->getObjectAt(x, z+2), breakableWalls->getObjectAt(x, z+2)));
+			}
+		}
+	} else {
+		if (breakableWalls->isObjectAt(x, z+1)) {
+			brokenWalls->insert(pair<BreakableObject*, BreakableObject*>(breakableWalls->getObjectAt(x, z+1), breakableWalls->getObjectAt(x, z+1)));
+		}
+	}
+
+	if (tryPlaceExplosion(x-1, z, endTime, explosionSound)) {
+		if (tryPlaceExplosion(x-2, z, endTime, explosionSound)) {
+			if (!tryPlaceExplosion(x-3, z, endTime, explosionSound)) {
+				if (breakableWalls->isObjectAt(x-3, z)) {
+					brokenWalls->insert(pair<BreakableObject*, BreakableObject*>(breakableWalls->getObjectAt(x-3, z), breakableWalls->getObjectAt(x-3, z)));
+				}
+			}
+		} else {
+			if (breakableWalls->isObjectAt(x-2, z)) {
+				brokenWalls->insert(pair<BreakableObject*, BreakableObject*>(breakableWalls->getObjectAt(x-2, z), breakableWalls->getObjectAt(x-2, z)));
+			}
+		}
+	} else {
+		if (breakableWalls->isObjectAt(x-1, z)) {
+			brokenWalls->insert(pair<BreakableObject*, BreakableObject*>(breakableWalls->getObjectAt(x-1, z), breakableWalls->getObjectAt(x-1, z)));
+		}
+	}
+
+	if (tryPlaceExplosion(x+1, z, endTime, explosionSound)) {
+		if (tryPlaceExplosion(x+2, z, endTime, explosionSound)) {
+			if (!tryPlaceExplosion(x+3, z, endTime, explosionSound)) {
+				if (breakableWalls->isObjectAt(x+3, z)) {
+					brokenWalls->insert(pair<BreakableObject*, BreakableObject*>(breakableWalls->getObjectAt(x+3, z), breakableWalls->getObjectAt(x+3, z)));
+				}
+			}
+		} else {
+			if (breakableWalls->isObjectAt(x+2, z)) {
+				brokenWalls->insert(pair<BreakableObject*, BreakableObject*>(breakableWalls->getObjectAt(x+2, z), breakableWalls->getObjectAt(x+2, z)));
+			}
+		}
+	} else {
+		if (breakableWalls->isObjectAt(x+1, z)) {
+			brokenWalls->insert(pair<BreakableObject*, BreakableObject*>(breakableWalls->getObjectAt(x+1, z), breakableWalls->getObjectAt(x+1, z)));
+		}
+	}
 }
 
 
-void doGameUpdateForPlayer(float updateTime, float currentTime, PlayerObject* player, int left, int right, int up, int down, int bomb) {
+void doGameUpdateForPlayer(float updateTime, float currentTime, PlayerObject* player, int left, int right, int up, int down, int bomb, Mix_Chunk *explosionSound) {
 	if (!player->isDead()) {
 		float x = player->getLocationX();
 		float z = player->getLocationZ();
@@ -412,7 +486,7 @@ void doGameUpdateForPlayer(float updateTime, float currentTime, PlayerObject* pl
 
 		if (keyboard[bomb] && player->canDropBomb(currentTime)) {
 			if (!isBombAt(round(player->getLocationX()), round(player->getLocationZ()))) {
-				bombs->insertAt(new BombObject(currentTime, bombModel, round(player->getLocationX()), round(player->getLocationZ()), 0, 0, 0.01), round(player->getLocationX()), round(player->getLocationZ()));
+				bombs->insertAt(new BombObject(explosionSound, currentTime, bombModel, round(player->getLocationX()), round(player->getLocationZ()), 0, 0, 0.01), round(player->getLocationX()), round(player->getLocationZ()));
 				printf("Dropped a bomb!\n");
 				player->droppedBomb(currentTime);
 			}
@@ -422,8 +496,8 @@ void doGameUpdateForPlayer(float updateTime, float currentTime, PlayerObject* pl
 
 
 void doGameUpdate(float updateTime, float currentTime) {
-	doGameUpdateForPlayer(updateTime, currentTime, player1, SDLK_LEFT, SDLK_RIGHT, SDLK_UP, SDLK_DOWN, SDLK_RSHIFT);
-	doGameUpdateForPlayer(updateTime, currentTime, player2, SDLK_a, SDLK_d, SDLK_w, SDLK_s, SDLK_LSHIFT);
+	doGameUpdateForPlayer(updateTime, currentTime, player1, SDLK_LEFT, SDLK_RIGHT, SDLK_UP, SDLK_DOWN, SDLK_RSHIFT, explosionSound1);
+	doGameUpdateForPlayer(updateTime, currentTime, player2, SDLK_a, SDLK_d, SDLK_w, SDLK_s, SDLK_LSHIFT, explosionSound2);
 
 	
 	{
@@ -444,8 +518,8 @@ void doGameUpdate(float updateTime, float currentTime) {
             begin = toRemove.begin(),
                     end = toRemove.end();
             for (;begin != end; begin++) {
-                bombs->removeAt((*begin)->getLocationX(), (*begin)->getLocationZ());
-                explosionAt((*begin)->getLocationX(), (*begin)->getLocationZ(), currentTime + EXPLOSIONLIFETIME);
+                BombObject* bomb = bombs->removeAt((*begin)->getLocationX(), (*begin)->getLocationZ());
+				explosionAt((*begin)->getLocationX(), (*begin)->getLocationZ(), currentTime + EXPLOSIONLIFETIME, bomb->getSound());
                 delete *begin;
             }
         }
@@ -476,34 +550,104 @@ void doGameUpdate(float updateTime, float currentTime) {
     }
 
 
+    {
+        map<BreakableObject*, BreakableObject*>::iterator
+			begin = brokenWalls->begin(),
+			end = brokenWalls->end();
+        for (;begin != end; begin++) {
+			breakableWalls->removeAt((*begin).first->getLocationX(), (*begin).first->getLocationZ());
+			//delete;
+        }
+		brokenWalls->clear();
+	}
 
-    if (died(player1)) {
+
+
+
+
+	if (died(player1) && !player1->isDead()) {
+		if (victoryTimer == 0) 
+			victoryTimer = currentTime;
+
         player1->die();
+		Mix_PlayChannel(-1, dieSound1, 0);
         printf("Some player died!\n");
     }
-    if (died(player2)) {
+    if (died(player2) && !player2->isDead()) {
+		if (victoryTimer == 0) 
+			victoryTimer = currentTime;
+
+		Mix_PlayChannel(-1, dieSound2, 0);
         player2->die();
         printf("Some player died!\n");
     }
+
+
+	if (currentTime - victoryTimer > WINDELAY && victoryTimer != 0) {
+		if (player1->isDead() && !player2->isDead()) {
+			Mix_PlayChannel(-1, victorySound2, 0);
+		} else if (!player1->isDead() && player2->isDead()) {
+			Mix_PlayChannel(-1, victorySound1, 0);
+		}
+		player1->die();
+		player2->die();
+	}
 }
 
 
 int main(int argc, char *argv[]) {
-
-    /* Init the subsets and set global map width / height */
-    MapUtilities<UnbreakableObject>::getMapSize("maze.data", levelHeight, levelWidth);
+    // Init the subsets and set global map width / height 
+    MapUtilities::getMapSize("maze.data", levelHeight, levelWidth);
     unbreakableWalls=new MapSubset<UnbreakableObject*>(levelWidth, levelHeight);
     breakableWalls = new MapSubset<BreakableObject*>(levelWidth, levelHeight);
+    brokenWalls = new map<BreakableObject*, BreakableObject*>();
     bombs = new MapSubset<BombObject*>(levelWidth, levelHeight);
     explosions = new MapSubset<ExplosionObject*>(levelWidth, levelHeight);
     spawns = new MapSubset<bool>(levelWidth, levelHeight);
 
-    /* SDL INITIATION */
-    SDL_Init(SDL_INIT_VIDEO);
+    // SDL INITIATION
+    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
+
+	// SOUND INITIATION
+	int audio_rate = 44100;
+	Uint16 audio_format = AUDIO_S16SYS;
+	int audio_channels = 2;
+	int audio_buffers = 4096;
+	if(Mix_OpenAudio(audio_rate, audio_format, audio_channels, audio_buffers) != 0) {
+		fprintf(stderr, "Unable to initialize audio: %s\n", Mix_GetError());
+		exit(1);
+	}
+	explosionSound1 = Mix_LoadWAV("sounds/explosion1.wav");
+	if(explosionSound1 == NULL) {
+		fprintf(stderr, "Unable to load WAV file: %s\n", Mix_GetError());
+	}
+	explosionSound2 = Mix_LoadWAV("sounds/explosion2.wav");
+	if(explosionSound2 == NULL) {
+		fprintf(stderr, "Unable to load WAV file: %s\n", Mix_GetError());
+	}
+	dieSound1 = Mix_LoadWAV("sounds/die1.wav");
+	if(dieSound1 == NULL) {
+		fprintf(stderr, "Unable to load WAV file: %s\n", Mix_GetError());
+	}
+	dieSound2 = Mix_LoadWAV("sounds/die2.wav");
+	if(dieSound2 == NULL) {
+		fprintf(stderr, "Unable to load WAV file: %s\n", Mix_GetError());
+	}
+	victorySound1 = Mix_LoadWAV("sounds/victory1.wav");
+	if(victorySound1 == NULL) {
+		fprintf(stderr, "Unable to load WAV file: %s\n", Mix_GetError());
+	}
+	victorySound2 = Mix_LoadWAV("sounds/victory2.wav");
+	if(victorySound2 == NULL) {
+		fprintf(stderr, "Unable to load WAV file: %s\n", Mix_GetError());
+	}
+
+
+
+    // OPENGL SETUP 
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_SetVideoMode(size[0], size[1], 0, SDL_OPENGL | SDL_HWSURFACE | SDL_RESIZABLE);
 
-    /* OPENGL SETUP */
     glClearColor((GLfloat)0.8, (GLfloat)1.0, (GLfloat)1.0, (GLfloat)1);
     glShadeModel(GL_SMOOTH);
     glEnable(GL_CULL_FACE);
@@ -516,12 +660,12 @@ int main(int argc, char *argv[]) {
 
     reshape(size[0], size[1]);
 
-    /* GAME SETUP */
+    // GAME SETUP 
     loadLevel();
     bombModel = new ModelLoader("lolly.3DS");
     explosionModel = new ModelLoader("lolly.3DS");
 
-    /* MAIN LOOP */
+    // MAIN LOOP 
     clock_t lastTime = clock(), currTime = clock();
     while (keepRunning) {
         doEvents();	//Process incoming events.
