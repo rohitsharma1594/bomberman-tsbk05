@@ -6,8 +6,8 @@
 
 class Object {
     GLfloat x, y, z, rotation, scale;
-    GLfloat crx, cry, crz;
-    GLfloat crxInc, cryInc, crzInc;
+    //GLfloat crx, cry, crz;
+    //GLfloat crxInc, cryInc, crzInc;
 
     Model* model;
 public:
@@ -37,6 +37,9 @@ public:
     void setLocationZ(GLfloat newZ) {
         z = newZ;
     };
+	void setScale(GLfloat newScale) {
+		scale = newScale;
+	}
 
 
     GLfloat getLocationX() {
@@ -51,6 +54,9 @@ public:
     GLfloat getRotation() {
         return rotation;
     };
+	GLfloat getScale() {
+		return scale;
+	}
 };
 
 #endif
