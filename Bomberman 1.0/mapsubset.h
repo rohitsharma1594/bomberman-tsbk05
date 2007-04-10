@@ -1,5 +1,4 @@
 #include <vector>
-#include <assert.h>
 
 #ifndef MAPSUBSET_H
 #define MAPSUBSET_H
@@ -54,7 +53,7 @@ MapSubset<T>::MapSubset(int col, int row) {
 
 template<class T>
 void MapSubset<T>::insertAt(T object, int x, int y) {
-    assert(objectArray[x][y] == NULL);
+    //assertassert(objectArray[x][y] == NULL);
     objectArray[x][y] = object;
     MapSubsetStruct<T>* info = new MapSubsetStruct<T>;
     info->object = object;
@@ -88,8 +87,7 @@ T MapSubset<T>::removeAt(int x, int y) {
         begin++;
     }
 
-    //assert(false);
-    return NULL; // this should never happen, we should actually crash here, I think assert does this?
+    return NULL;
 }
 
 

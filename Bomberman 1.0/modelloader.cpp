@@ -4,7 +4,6 @@
 #include <lib3ds/material.h>
 #include "modelloader.h"
 #include "freeglut.h"
-#include <assert.h>
 #include <stdlib.h>
 #include <math.h>
 

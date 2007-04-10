@@ -5,7 +5,6 @@
 #include <time.h>
 #include <stdlib.h>
 #include <iostream>
-#include <assert.h>
 #include "unbreakableobject.h"
 #include "breakableobject.h"
 #include "bombobject.h"
@@ -136,7 +135,7 @@ void loadLevel() {
     }
 
     // Load unbreakable objects i.e walls
-    assert(MapUtilities::readMap("maze.data", unbreakableWalls, breakableWalls, new ModelLoader("cube_frame_subsurf_2.3ds"), new ModelLoader("cube_frame_subsurf_2.3ds"),0.5, '#', '%'));
+    MapUtilities::readMap("maze.data", unbreakableWalls, breakableWalls, new ModelLoader("cube_frame_subsurf_2.3ds"), new ModelLoader("cube_frame_subsurf_2.3ds"),0.5, '#', '%');
 
     // Place a player!
     if (player1 != NULL) {
@@ -509,7 +508,9 @@ void doGameUpdate(float updateTime, float currentTime) {
             for (;begin != end; begin++) {
                 if ((*begin)->object->isExploded(currentTime)) {
                     toRemove.push_back((*begin)->object);
-                }
+				} else {
+					(*begin)->object->updateScale(currentTime);
+				}
             }
         }
 
