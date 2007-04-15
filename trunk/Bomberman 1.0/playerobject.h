@@ -7,8 +7,9 @@ class PlayerObject : public Object {
     static const int bombFrequency = 0;
     float lastBombDrop;
     bool isDeadVar;
+	int light;
 public:
-    PlayerObject(Model*, GLfloat, GLfloat, GLfloat = 0, GLfloat = 0, GLfloat = 1);
+    PlayerObject(Model*, GLfloat, GLfloat, GLfloat = 0, GLfloat = 0, GLfloat = 1, int = -1);
     bool canDropBomb(float currentTime);
     void droppedBomb(float currentTime);
     bool isDead() {
@@ -17,6 +18,7 @@ public:
     void die() {
         isDeadVar = true;
     };
+	void draw();
 };
 
 #endif
