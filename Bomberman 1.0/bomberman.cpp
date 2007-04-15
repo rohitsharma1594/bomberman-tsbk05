@@ -142,8 +142,8 @@ void loadLevel() {
         delete player1;
     }
 	Model* playerModel = new ModelLoader("lolly.3DS");
-    player1 = new PlayerObject(playerModel, 1, 1, 0, 180.0, 0.01);
-    player2 = new PlayerObject(playerModel, 8, 8, 0, 180.0, 0.01);
+    player1 = new PlayerObject(playerModel, 1, 1, 0, 180.0, 0.01, GL_LIGHT2);
+    player2 = new PlayerObject(playerModel, 8, 8, 0, 180.0, 0.01, GL_LIGHT1);
 }
 
 
@@ -655,8 +655,40 @@ int main(int argc, char *argv[]) {
     glCullFace(GL_BACK);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
+
     glEnable(GL_LIGHT0);
-    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_LIGHT1);
+    glEnable(GL_LIGHT2);
+
+	{
+		GLfloat vector[4];
+		vector[0] = 1;
+		vector[1] = 1;
+		vector[2] = 1;
+		vector[3] = 1;
+		glLightfv(GL_LIGHT0, GL_DIFFUSE, vector);
+		glLightfv(GL_LIGHT0, GL_SPECULAR, vector);
+		glLightfv(GL_LIGHT1, GL_DIFFUSE, vector);
+		glLightfv(GL_LIGHT1, GL_SPECULAR, vector);
+		glLightfv(GL_LIGHT2, GL_DIFFUSE, vector);
+		glLightfv(GL_LIGHT2, GL_SPECULAR, vector);
+		vector[0] = 4.5;
+		vector[1] = 0;
+		vector[2] = 4.5;
+		vector[3] = 1;
+		glLightfv(GL_LIGHT0, GL_POSITION, vector);
+		glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 1);
+		glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.1);
+		glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1);
+		glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 1);
+		glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0.1);
+		glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, 1);
+		glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION, 1);
+		glLightf(GL_LIGHT2, GL_QUADRATIC_ATTENUATION, 0.1);
+		glLightf(GL_LIGHT2, GL_CONSTANT_ATTENUATION, 1);
+	}
+
+	glEnable(GL_TEXTURE_2D);
     glEnable(GL_NORMALIZE);
 
     reshape(size[0], size[1]);
