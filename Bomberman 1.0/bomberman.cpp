@@ -135,15 +135,17 @@ void loadLevel() {
     }
 
     // Load unbreakable objects i.e walls
-    MapUtilities::readMap("maze.data", unbreakableWalls, breakableWalls, new ModelLoader("cube_frame_subsurf_2.3ds"), new ModelLoader("cube_frame_subsurf_2.3ds"),0.5, '#', '%');
+    MapUtilities::readMap("maze.data", unbreakableWalls, breakableWalls, new ModelLoader("lego_yellow.3ds"), new ModelLoader("lego_blue.3ds"),0.5, '#', '%');
 
     // Place a player!
     if (player1 != NULL) {
         delete player1;
     }
-	Model* playerModel = new ModelLoader("lolly.3DS");
-    player1 = new PlayerObject(playerModel, 1, 1, 0, 180.0, 0.01, GL_LIGHT2);
-    player2 = new PlayerObject(playerModel, 8, 8, 0, 180.0, 0.01, GL_LIGHT1);
+
+	Model* playerModel = new ModelLoader("bman2.3ds");
+    player1 = new PlayerObject(playerModel, 1, 1, 0, 0.0, 0.1, GL_LIGHT2);
+    player2 = new PlayerObject(playerModel, 8, 8, 0, 0.0, 0.1, GL_LIGHT1);
+
 }
 
 
@@ -330,10 +332,10 @@ bool tryPlaceExplosion(int x, int z, float endTime, Mix_Chunk *explosionSound) {
         } else if (isExplosionAt(x, z)) {
             //if (explosions->getObjectAt(x, z)->getExplosionRadius() < spreadCount) {
             explosions->removeAt(x, z);
-            explosions->insertAt(new ExplosionObject(endTime, explosionModel, x, z, 0, 180, 0.01), x, z);
+            explosions->insertAt(new ExplosionObject(endTime, explosionModel, x, z, 0, 180, 0.1), x, z);
             //}
         } else {
-            explosions->insertAt(new ExplosionObject(endTime, explosionModel, x, z, 0, 180, 0.01), x, z);
+            explosions->insertAt(new ExplosionObject(endTime, explosionModel, x, z, 0, 180, 0.1), x, z);
         }
 
         return true;
@@ -485,7 +487,7 @@ void doGameUpdateForPlayer(float updateTime, float currentTime, PlayerObject* pl
 
 		if (keyboard[bomb] && player->canDropBomb(currentTime)) {
 			if (!isBombAt(round(player->getLocationX()), round(player->getLocationZ()))) {
-				bombs->insertAt(new BombObject(explosionSound, currentTime, bombModel, round(player->getLocationX()), round(player->getLocationZ()), 0, 0, 0.01), round(player->getLocationX()), round(player->getLocationZ()));
+				bombs->insertAt(new BombObject(explosionSound, currentTime, bombModel, round(player->getLocationX()), round(player->getLocationZ()), 0, 0, 0.2), round(player->getLocationX()), round(player->getLocationZ()));
 				printf("Dropped a bomb!\n");
 				player->droppedBomb(currentTime);
 			}
@@ -695,8 +697,8 @@ int main(int argc, char *argv[]) {
 
     // GAME SETUP 
     loadLevel();
-    bombModel = new ModelLoader("lolly.3DS");
-    explosionModel = new ModelLoader("lolly.3DS");
+    bombModel = new ModelLoader("bomb.3ds");
+    explosionModel = new ModelLoader("explo.3ds");
 
     // MAIN LOOP 
     clock_t lastTime = clock(), currTime = clock();
