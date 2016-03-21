@@ -1,0 +1,1 @@
+A simple opengl bomberman clone written for a school project.
